@@ -17,10 +17,12 @@ class News:
         self.news_title = info_dict["title"]
         self.tweet_ids =[]
 
-        try:
-            tweets =  [int(tweet_id) for tweet_id in info_dict["tweet_ids"].split("\t")]
+        try: 
+            tweets =  [int(tweet_id.strip().rstrip()) for tweet_id in info_dict["tweet_ids"].split(" ")if len(tweet_id) > 0]
+            print(tweets)
             self.tweet_ids = tweets
-        except:
+        except Exception as e:
+            print(e)
             pass
 
         self.label = label
@@ -60,12 +62,21 @@ class DataCollector:
                 maxInt = int(maxInt / 10)
 
         news_list = []
-        with open('{}/{}_{}.csv'.format(self.config.dataset_dir, data_choice["news_source"],
+        with open('{}/{}_{}.tsv'.format(self.config.dataset_dir, data_choice["news_source"],
                                         data_choice["label"]), encoding="UTF-8") as csvfile:
-            reader = csv.DictReader(csvfile)
-            for news in reader:
-                news_list.append(News(news, data_choice["label"], data_choice["news_source"]))
-
+            # reader = csv.DictReader(csvfile)
+            for i, line in enumerate(csvfile):
+                if i > 0:  # exclude header  
+                    cols = line.rstrip('\n').split('\t')
+                    print(cols, line)
+                    news = {
+                            "id": cols[0],
+                            "news_url": cols[1],
+                            "title": cols[2],
+                            "tweet_ids": cols[3]
+                    }
+                    news_list.append(News(news, data_choice["label"], data_choice["news_source"]))
+        print(len(news_list))
         return news_list
 
 
