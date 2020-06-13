@@ -27,10 +27,11 @@ def dump_tweet_information(tweet_chunk: list, config: Config, twython_connector:
 
     tweet_list = []
     for tweet in tweet_chunk:
-        tweet_list.append(tweet.tweet_id)
+        tweet_list.append(str(tweet.tweet_id))
 
     try:
-        tweet_objects_map = twython_connector.get_twython_connection(Constants.GET_TWEET).lookup_status(id=tweet_list,
+        twython_connection = twython_connector.get_twython_connection(Constants.GET_TWEET)
+        tweet_objects_map = twython_connection.lookup_status(id=tweet_list,
                                                                                                     include_entities=True,
                                                                                                     map=True)['id']
         for tweet in tweet_chunk:
@@ -45,9 +46,11 @@ def dump_tweet_information(tweet_chunk: list, config: Config, twython_connector:
 
     except TwythonRateLimitError:
         logging.exception("Twython API rate limit exception")
+        print("Twython API rate limit exception")
 
     except Exception as ex:
         logging.exception("exception in collecting tweet objects")
+        print(ex)
 
     return None
 

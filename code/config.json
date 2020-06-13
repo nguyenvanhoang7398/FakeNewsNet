@@ -6,13 +6,9 @@
   "num_twitter_keys": 4,
   "data_collection_choice": [
     {
-      "news_source": "twitter",
+      "news_source": "corona",
       "label": "fake"
-    },
-    {
-      "news_source": "twitter",
-      "label": "real"
     }
   ],
-  "data_features_to_collect" : ["news_articles"]
+  "data_features_to_collect" : ["news_articles", "tweets", "retweets", "user_timeline_tweets", "user_followers", "user_following"]
 }

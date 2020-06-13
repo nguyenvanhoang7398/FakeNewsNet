@@ -9,6 +9,7 @@ from newspaper import Article
 from util.util import DataCollector
 from util.util import Config, create_dir
 from util import Constants
+from urllib.parse import urlparse
 
 
 def crawl_link_article(url):
@@ -113,7 +114,7 @@ def get_website_url_from_arhieve(url):
 def crawl_news_article(url):
     news_article = crawl_link_article(url)
 
-    # If the news article could not be fetched from original website, fetch from archieve if it exists.
+    # If the news article could not be fetched from original website, fetch from archive if it exists.
     if news_article is None:
         archieve_url = get_website_url_from_arhieve(url)
         if archieve_url is not None:
@@ -133,8 +134,17 @@ def collect_news_articles(news_list, news_source, label, config: Config):
         create_dir("{}/{}".format(save_dir, news.news_id))
         news_article = crawl_news_article(news.news_url)
         if news_article:
-            json.dump(news_article,
-                      open("{}/{}/news content.json".format(save_dir, news.news_id), "w", encoding="UTF-8"))
+            news_article["title"] = news.news_title  # use the given title instead of the source title
+        else:   # only use this for web app
+            parsed_uri = urlparse(news.news_url)
+            news_article = {
+                "title": news.news_title,
+                "url": news.news_url,
+                "text": news.news_title,
+                "source": "{uri.scheme}://{uri.netloc}/".format(uri=parsed_uri)
+            }
+        json.dump(news_article,
+                  open("{}/{}/news content.json".format(save_dir, news.news_id), "w", encoding="UTF-8"))
 
 
 class NewsContentCollector(DataCollector):

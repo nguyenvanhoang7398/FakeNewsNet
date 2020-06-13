@@ -1,0 +1,5 @@
+code/fakenewsnet_dataset/
+**/__pycache__/**
+dataset/
+.idea/
+code/entities.txt
